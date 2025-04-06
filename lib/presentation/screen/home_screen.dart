@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmerpoc/domain/entity/user_entity.dart';
 import 'package:shimmerpoc/presentation/bloc/user_bloc.dart';
 import 'package:shimmerpoc/presentation/screen/home_shimmer_template.dart';
 import 'package:shimmerpoc/utils/colors.dart';
@@ -15,6 +16,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  UserEntity? userEntity;
   @override
   void initState() {
     //* Initial API call
@@ -30,19 +32,34 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.transparent,
         title: AppbarWidget(),
       ),
-      body: BlocBuilder<UserBloc, UserState>(
-        builder: (context, state) {
-          if (state is UserLoadingState) {
-            //* Loading state
-            return const HomeShimmerTemplate();
-          } else if (state is UserLoadedState) {
-            //* Loaded state
-            return bodyWidget();
-          } else {
-            //* err state
-            return SizedBox();
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: primaryColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+        onPressed: () {
+          context.read<UserBloc>().add(GetUserData());
+        },
+        child: const Icon(Icons.refresh, color: textColor),
+      ),
+      body: BlocListener<UserBloc, UserState>(
+        listener: (context, state) {
+          if (state is UserLoadedState) {
+            userEntity = state.user;
           }
         },
+        child: BlocBuilder<UserBloc, UserState>(
+          builder: (context, state) {
+            if (state is UserLoadingState) {
+              //* Loading state
+              return const HomeShimmerTemplate();
+            } else if (state is UserLoadedState) {
+              //* Loaded state
+              return bodyWidget();
+            } else {
+              //* err state
+              return SizedBox();
+            }
+          },
+        ),
       ),
     );
   }
@@ -57,8 +74,8 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               spacing: 10,
               children: [
-                const Text(
-                  "Hello, Renga!",
+                Text(
+                  "Hello, ${userEntity!.loggedUserName!}!",
                   style: TextStyle(
                     fontSize: 30,
                     color: textColor,
@@ -164,12 +181,12 @@ class _HomeScreenState extends State<HomeScreen> {
           height: 100,
           child: ListView.builder(
             shrinkWrap: true,
-            itemCount: 10,
+            itemCount: userEntity!.friends!.length,
             scrollDirection: Axis.horizontal,
             itemBuilder: (context, index) {
               return friendsProfileWidget(
-                "Renga",
-                "assets/images/profilePic.jpeg",
+                userEntity!.friends![index].name,
+                userEntity!.friends![index].profilePath,
                 isFirstIndex: index == 0,
               );
             },
@@ -277,20 +294,47 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             //* Trending & more button
+            // if(userEntity!.posts![index].isTrending!)
+            // Align(
+            //   alignment: Alignment.topLeft,
+            //   child: Container(
+            //     padding: const EdgeInsets.all(5),
+            //     margin: const EdgeInsets.only(left: 10, top: 10),
+            //     decoration: BoxDecoration(
+            //       color: primaryColor,
+            //       borderRadius: BorderRadius.circular(50),
+            //     ),
+            //     child: Text(
+            //       "🔥 Trending",
+            //       style: TextStyle(color: Colors.white),
+            //     ),
+            //   ),
+            // ),
             Align(
               alignment: Alignment.topCenter,
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [trendingButtonWidget(), moreButtonWidget()],
+                  mainAxisAlignment:
+                      (userEntity!.posts![index].isTrending!)
+                          ? MainAxisAlignment.spaceBetween
+                          : MainAxisAlignment.end,
+                  children: [
+                    if (userEntity!.posts![index].isTrending!)
+                      trendingButtonWidget(),
+                    moreButtonWidget(),
+                  ],
                 ),
               ),
             ),
             //* User profile
             Align(
               alignment: Alignment.bottomCenter,
-              child: userProfileWidget(),
+              child: userProfileWidget(
+                userEntity!.posts![index].user!.profilePath!,
+                userEntity!.posts![index].user!.name,
+                userEntity!.posts![index].user!.lastSeen,
+              ),
             ),
           ],
         ),
@@ -339,7 +383,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget userProfileWidget() {
+  Widget userProfileWidget(
+    String? profileUrl,
+    String? userName,
+    String? lastSeen,
+  ) {
     return SizedBox(
       height: 70,
       child: Padding(
@@ -349,8 +397,8 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             //* User profile pic
             CircleAvatar(
-              backgroundImage: const AssetImage(
-                "assets/images/profilePic.jpeg",
+              backgroundImage: AssetImage(
+                profileUrl ?? "assets/images/profilePic1.jpg",
               ),
               radius: 20,
             ),
@@ -365,7 +413,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   spacing: 10,
                   children: [
                     Text(
-                      "@renga",
+                      userName ?? "User Name",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -377,7 +425,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 //* Last seen
                 Text(
-                  "Last seen 2 hours ago",
+                  lastSeen ?? "Last seen 2 hours ago",
                   style: TextStyle(color: Colors.white.withAlpha(200)),
                 ),
               ],

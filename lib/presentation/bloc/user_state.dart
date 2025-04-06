@@ -8,10 +8,8 @@ final class UserInitial extends UserState {}
 class UserLoadingState extends UserState {}
 
 class UserLoadedState extends UserState {
-  final String userName;
-  final String userEmail;
-
-  UserLoadedState({required this.userName, required this.userEmail});
+  final UserEntity user;
+  UserLoadedState(this.user);
 }
 
 class UserErrorState extends UserState {
