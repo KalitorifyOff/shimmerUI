@@ -1,16 +1,42 @@
-# shimmerpoc
+## 🎯 Final UI Screens
 
-A new Flutter project.
+Here’s a look at the real app screens while using the **Shimmer Effect** in a Flutter app built with **Clean Architecture**.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+### 🕸️ Shimmer Loading Screen
 
-A few resources to get you started if this is your first Flutter project:
+<img src="assets/screenshots/shimmerLoading.png" alt="Shimmer Loading" width="300"/>
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+🔹 Shows loading placeholders using shimmer effect while waiting for data from API or local database.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+### 📋 Fetched Data UI
+
+<img src="assets/screenshots/loadedState.png" alt="Loaded Data UI" width="300"/>
+
+🔹 Displays user data and posts after successful data fetch.  
+🔹 Data is retrieved using proper clean architecture layers (use case → repository → data source).
+
+---
+
+### 🔄 Clean Architecture Flow Visual
+
+<img src="assets/screenshots/clean_architecture_flow.png" alt="Clean Architecture Diagram" width="500"/>
+
+🧠 This diagram shows how each layer communicates cleanly:  
+`UI → UseCase → Repository → DataSource → Model`
+
+---
+
+## 📸 How to Add Your Screenshots
+
+1. Place your images in:  
+   `assets/screenshots/`
+
+2. Update your `pubspec.yaml`:
+   ```yaml
+   flutter:
+     assets:
+       - assets/screenshots/
