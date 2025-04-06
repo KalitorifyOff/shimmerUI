@@ -2,6 +2,9 @@ import 'dart:ui';
 
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmerpoc/presentation/bloc/user_bloc.dart';
+import 'package:shimmerpoc/presentation/screen/home_shimmer_template.dart';
 import 'package:shimmerpoc/utils/colors.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,6 +16,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
+  void initState() {
+    //* Initial API call
+    context.read<UserBloc>().add(GetUserData());
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: bgColor,
@@ -20,66 +30,82 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.transparent,
         title: AppbarWidget(),
       ),
-      body: SingleChildScrollView(
-        // physics: ClampingScrollPhysics(),
-        child: Column(
-          children: [
-            //* Greet Section
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 10),
-              child: Column(
-                spacing: 10,
-                children: [
-                  const Text(
-                    "Hello, Renga!",
-                    style: TextStyle(
-                      fontSize: 30,
-                      color: textColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    "Welcome back to SocApp homepage!",
-                    style: TextStyle(color: Colors.black38.withAlpha(100)),
-                  ),
-                ],
-              ),
-            ),
-            //* Post Sectoin
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
-                border: Border.all(color: borderColor),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withAlpha(100),
-                    blurRadius: 5,
-                    spreadRadius: -15,
-                    offset: const Offset(0, -5),
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: [
-                    //* My Friends section
-                    myFriendsWidget(),
+      body: BlocBuilder<UserBloc, UserState>(
+        builder: (context, state) {
+          if (state is UserLoadingState) {
+            //* Loading state
+            return const HomeShimmerTemplate();
+          } else if (state is UserLoadedState) {
+            //* Loaded state
+            return bodyWidget();
+          } else {
+            //* err state
+            return SizedBox();
+          }
+        },
+      ),
+    );
+  }
 
-                    //* Post section
-                    postSection(),
-                  ],
+  Widget bodyWidget({bool isLoading = false}) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          //* Greet Section
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 10),
+            child: Column(
+              spacing: 10,
+              children: [
+                const Text(
+                  "Hello, Renga!",
+                  style: TextStyle(
+                    fontSize: 30,
+                    color: textColor,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+                Text(
+                  "Welcome back to SocApp homepage!",
+                  style: TextStyle(color: Colors.black38.withAlpha(100)),
+                ),
+              ],
+            ),
+          ),
+          //* Post Sectoin
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+              border: Border.all(color: borderColor),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withAlpha(100),
+                  blurRadius: 5,
+                  spreadRadius: -15,
+                  offset: const Offset(0, -5),
+                ),
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: [
+                  //* My Friends section
+                  myFriendsWidget(),
+
+                  //* Post section
+                  postSection(),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -175,9 +201,25 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Icon(Icons.add, color: primaryColor, size: 30),
                 ),
               )
-              : CircleAvatar(
-                backgroundImage: AssetImage(userProfileUrl!),
-                radius: 30,
+              : Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFFfbcdb3),
+                      Color(0xFFff6862),
+                    ], // your custom gradient
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomLeft,
+                  ),
+                ),
+                padding: const EdgeInsets.all(3),
+                child: CircleAvatar(
+                  backgroundImage: AssetImage(userProfileUrl!),
+                  radius: 30,
+                ),
               ),
           Text(
             isFirstIndex ? "Add New" : userName ?? 'UserName',
@@ -207,11 +249,11 @@ class _HomeScreenState extends State<HomeScreen> {
       margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(35),
+        borderRadius: BorderRadius.circular(30),
         border: Border.all(color: borderColor, width: 6),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(25),
         child: Stack(
           children: [
             //* Post Img
