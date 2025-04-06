@@ -30,12 +30,13 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: bgColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: AppbarWidget(),
+        title: appbarWidget(),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: primaryColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
         onPressed: () {
+          //* Refresh button to call the same get user API call
           context.read<UserBloc>().add(GetUserData());
         },
         child: const Icon(Icons.refresh, color: textColor),
@@ -127,13 +128,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget AppbarWidget() {
+  Widget appbarWidget() {
     return Padding(
       padding: const EdgeInsets.only(right: 10, left: 10, bottom: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButtonWidget(Icons.widgets_outlined),
+          iconButtonWidget(Icons.widgets_outlined),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             spacing: 5,
@@ -145,13 +146,13 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-          IconButtonWidget(Icons.notifications_outlined),
+          iconButtonWidget(Icons.notifications_outlined),
         ],
       ),
     );
   }
 
-  Widget IconButtonWidget(IconData icon) {
+  Widget iconButtonWidget(IconData icon) {
     return IconButton(
       onPressed: () {},
       icon: Icon(icon, color: textColor),
@@ -280,7 +281,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 fit: BoxFit.cover,
               ),
             ),
-            //* Liner Gradient
+            //* Liner Gradient for user profile to elavate the user image, name, last seen
+            //* and make it more visible
             Positioned.fill(
               child: Container(
                 decoration: BoxDecoration(
@@ -294,22 +296,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             //* Trending & more button
-            // if(userEntity!.posts![index].isTrending!)
-            // Align(
-            //   alignment: Alignment.topLeft,
-            //   child: Container(
-            //     padding: const EdgeInsets.all(5),
-            //     margin: const EdgeInsets.only(left: 10, top: 10),
-            //     decoration: BoxDecoration(
-            //       color: primaryColor,
-            //       borderRadius: BorderRadius.circular(50),
-            //     ),
-            //     child: Text(
-            //       "🔥 Trending",
-            //       style: TextStyle(color: Colors.white),
-            //     ),
-            //   ),
-            // ),
             Align(
               alignment: Alignment.topCenter,
               child: Padding(
@@ -420,7 +406,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const Icon(Icons.verified_user, color: Colors.blueAccent),
+                    const Icon(
+                      Icons.verified,
+                      color: Colors.blueAccent,
+                      size: 18,
+                    ),
                   ],
                 ),
                 //* Last seen
