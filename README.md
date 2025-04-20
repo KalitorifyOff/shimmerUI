@@ -19,25 +19,3 @@ Here’s a look at the real app screens while using the **Shimmer Effect** in a 
 
 🔹 Displays user data and posts after successful data fetch.  
 🔹 Data is retrieved using proper clean architecture layers (use case → repository → data source).
-
----
-
-### 🔄 Clean Architecture Flow Visual
-
-<img src="assets/screenshots/clean_architecture_flow.png" alt="Clean Architecture Diagram" width="500"/>
-
-🧠 This diagram shows how each layer communicates cleanly:  
-`UI → UseCase → Repository → DataSource → Model`
-
----
-
-## 📸 How to Add Your Screenshots
-
-1. Place your images in:  
-   `assets/screenshots/`
-
-2. Update your `pubspec.yaml`:
-   ```yaml
-   flutter:
-     assets:
-       - assets/screenshots/
